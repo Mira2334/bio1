@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Рефлексия: 4 шкалы (1–100)</title>
+  <style>
+    :root{
+      --bg:#050607;
+      --green:#2eea77;
+      --green2:#19b85a;
+      --text:#eafff0;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text); }
+
+    /* Тот же световой стиль: тёмная сетка + зелёные засветы */
+    body{
+      background:
+        radial-gradient(ellipse at top left, rgba(46,234,119,.30) 0%, rgba(46,234,119,0) 45%),
+        radial-gradient(ellipse at top right, rgba(46,234,119,.22) 0%, rgba(46,234,119,0) 45%),
+        radial-gradient(ellipse at bottom left, rgba(46,234,119,.18) 0%, rgba(46,234,119,0) 50%),
+        radial-gradient(ellipse at bottom right, rgba(46,234,119,.26) 0%, rgba(46,234,119,0) 50%),
+        linear-gradient(var(--bg), var(--bg));
+      overflow:hidden;
+      touch-action: none;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background:
+        repeating-linear-gradient(to right, rgba(255,255,255,.10) 0px, rgba(255,255,255,.10) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 32px),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,.10) 0px, rgba(255,255,255,.10) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 32px);
+      opacity:.45;
+      pointer-events:none;
+    }
+
+    header{
+      position:fixed; top:0; left:0; right:0;
+      padding:14px 16px;
+      background:linear-gradient(to bottom, rgba(0,0,0,.65), rgba(0,0,0,.15));
+      backdrop-filter: blur(6px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      z-index:3;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:0 10px; }
+    .title{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+      font-weight:900;
+      text-shadow:0 8px 18px rgba(0,0,0,.55);
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(46,234,119,.12);
+      border:1px solid rgba(46,234,119,.22);
+      box-shadow:0 10px 22px rgba(0,0,0,.35);
+      font-size:12px;
+      font-weight:800;
+      color:rgba(234,255,240,.92);
+    }
+    .dot{
+      width:9px; height:9px; border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 18px rgba(46,234,119,.75);
+    }
+
+    main{
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:90px 16px 18px;
+    }
+
+    /* экран ввода количества учеников */
+    .start{
+      width:min(560px, 92vw);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(10,64,34,.92), rgba(6,30,18,.92));
+      border:1px solid rgba(46,234,119,.30);
+      box-shadow: 0 28px 60px rgba(0,0,0,.60), inset 0 1px 0 rgba(255,255,255,.10);
+      overflow:hidden;
+      position:relative;
+      padding:18px;
+    }
+    .start::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at top left, rgba(46,234,119,.22), rgba(46,234,119,0) 45%),
+        radial-gradient(ellipse at bottom right, rgba(46,234,119,.16), rgba(46,234,119,0) 50%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .start h2{
+      position:relative;
+      margin:0 0 10px;
+      font-size:20px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      text-shadow:0 10px 22px rgba(0,0,0,.55);
+    }
+    .start p{
+      position:relative;
+      margin:0 0 14px;
+      color:rgba(234,255,240,.80);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .row{
+      position:relative;
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center;
+    }
+    input{
+      flex:1;
+      min-width:180px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      font-size:16px;
+      font-weight:900;
+      outline:none;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.35);
+    }
+    input::placeholder{ color:rgba(234,255,240,.45); font-weight:700; }
+    .btn{
+      border:none;
+      cursor:pointer;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      color:var(--text);
+      background:rgba(46,234,119,.14);
+      border:1px solid rgba(46,234,119,.32);
+      box-shadow:0 14px 28px rgba(0,0,0,.35);
+      white-space:nowrap;
+    }
+    .btn.primary{
+      background:linear-gradient(180deg, rgba(46,234,119,.82), rgba(25,184,90,.80));
+      border:1px solid rgba(0,0,0,.30);
+      color:#062012;
+    }
+    .btn:hover{ filter:brightness(1.08); }
+
+    /* экран рефлексии */
+    .panel{
+      width:min(1100px, 100%);
+      display:none;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px 14px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 18px 40px rgba(0,0,0,.45);
+    }
+    .topbar .big{
+      font-weight:1000;
+      letter-spacing:.2px;
+      text-shadow:0 10px 22px rgba(0,0,0,.55);
+    }
+    .topbar .small{
+      color:rgba(234,255,240,.75);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .scales{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap:14px;
+    }
+    @media (max-width:980px){ .scales{ grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
+    @media (max-width:520px){ .scales{ grid-template-columns: 1fr; } }
+
+    .card{
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(10,64,34,.85), rgba(6,30,18,.85));
+      border:1px solid rgba(46,234,119,.26);
+      box-shadow: 0 22px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+      position:relative;
+      overflow:hidden;
+      padding:14px 14px 16px;
+      min-height:420px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at top left, rgba(46,234,119,.18), rgba(46,234,119,0) 52%),
+        radial-gradient(ellipse at bottom right, rgba(46,234,119,.12), rgba(46,234,119,0) 58%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .q{
+      position:relative;
+      margin:0;
+      font-size:13px;
+      line-height:1.25;
+      font-weight:1000;
+      color:rgba(234,255,240,.95);
+      text-shadow:0 10px 22px rgba(0,0,0,.55);
+      min-height:44px;
+    }
+
+    .meter{
+      position:relative;
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 0 0;
+    }
+
+    /* вертикальная шкала */
+    .track{
+      position:relative;
+      width:86px;
+      height:320px;
+      border-radius:20px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,.45);
+      overflow:hidden;
+      touch-action:none;
+      user-select:none;
+    }
+    .fill{
+      position:absolute;
+      left:0; right:0;
+      bottom:0;
+      height:1%;
+      border-radius:18px;
+      box-shadow:0 0 18px rgba(46,234,119,.30);
+      transition:height .05s linear;
+    }
+    .handle{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      width:74px;
+      height:10px;
+      border-radius:999px;
+      background:rgba(234,255,240,.88);
+      box-shadow:0 10px 22px rgba(0,0,0,.55);
+      border:1px solid rgba(0,0,0,.25);
+      pointer-events:none; /* двигаем по track */
+      opacity:.85;
+    }
+
+    .scale-info{
+      position:relative;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-size:12px;
+      font-weight:900;
+      color:rgba(234,255,240,.80);
+      margin-top:6px;
+    }
+    .value{
+      position:relative;
+      font-size:28px;
+      font-weight:1100;
+      letter-spacing:.2px;
+      text-shadow:0 12px 24px rgba(0,0,0,.55);
+      text-align:center;
+      margin-top:6px;
+    }
+    .value span{
+      font-size:14px;
+      font-weight:900;
+      color:rgba(234,255,240,.78);
+      margin-left:4px;
+    }
+
+    .bottom-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-top:2px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,.65);
+      border:1px solid rgba(46,234,119,.25);
+      padding:10px 12px;
+      border-radius:14px;
+      color:rgba(234,255,240,.92);
+      font-weight:900;
+      box-shadow:0 18px 40px rgba(0,0,0,.55);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+      z-index:20;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        Рефлексия урока (сенсорные шкалы 1–100)
+        <span class="pill"><span class="dot"></span> веди пальцем снизу ↑ вверх</span>
+        <span class="pill"><span class="dot"></span> чем ниже — тем темнее, верх — зелёный</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Стартовый экран -->
+    <section id="start" class="start" aria-label="Ввод количества учеников">
+      <h2>Количество учеников</h2>
+      <p>Учитель вводит число учеников. Далее каждый ученик по очереди подходит и выставляет 4 показателя (1–100), проводя пальцем по шкалам.</p>
+      <div class="row">
+        <input id="countInput" type="number" min="1" max="60" placeholder="Например: 20" />
+        <button id="startBtn" class="btn primary">Открыть рефлексию</button>
+      </div>
+      <p style="margin-top:12px;opacity:.9">Подсказка: можно использовать и мышь (клик/перетаскивание по шкале).</p>
+    </section>
+
+    <!-- Панель рефлексии -->
+    <section id="panel" class="panel" aria-label="Рефлексия">
+      <div class="topbar">
+        <div>
+          <div class="big" id="studentLabel">Ученик 1 из 1</div>
+          <div class="small">Проведи пальцем по каждой шкале. Значение сохраняется при переходе к следующему ученику.</div>
+        </div>
+        <div class="bottom-actions">
+          <button id="resetCurrent" class="btn">Сбросить шкалы</button>
+          <button id="nextBtn" class="btn primary">Сохранить и следующий</button>
+        </div>
+      </div>
+
+      <div class="scales" id="scales">
+        <!-- 4 карточки -->
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast">Готово</div>
+
+  <script>
+    const startEl = document.getElementById('start');
+    const panelEl = document.getElementById('panel');
+    const countInput = document.getElementById('countInput');
+    const startBtn = document.getElementById('startBtn');
+    const studentLabel = document.getElementById('studentLabel');
+    const scalesWrap = document.getElementById('scales');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetCurrentBtn = document.getElementById('resetCurrent');
+    const toast = document.getElementById('toast');
+
+    const QUESTIONS = [
+      "1 — Урок понравился на ...%",
+      "2 — Я понял тему на ...%",
+      "3 — Моё настроение после урока ...%",
+      "4 — Передаю свой процент настроения другим..."
+    ];
+
+    let totalStudents = 0;
+    let currentStudent = 1;
+
+    // ответы: массив студентов, у каждого 4 значения
+    let results = [];
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    // Цвет заливки: чем выше значение — тем ярче и зеленее
+    // Делаем постоянный "зелёный" тон, но светлота растёт
+    function colorForValue(v){
+      // v: 1..100
+      const clamped = Math.max(1, Math.min(100, v));
+      const light = 14 + (clamped/100) * 44;  // 14..58
+      const sat = 78;                         // насыщенность
+      const hue = 138;                        // зелёный с уклоном в изумруд
+      return `hsl(${hue} ${sat}% ${light}%)`;
+    }
+
+    function buildScales(){
+      scalesWrap.innerHTML = "";
+      QUESTIONS.forEach((text, idx) => {
+        const card = document.createElement('div');
+        card.className = "card";
+        card.innerHTML = `
+          <p class="q">${text}</p>
+          <div class="meter">
+            <div class="track" data-idx="${idx}" aria-label="Шкала ${idx+1}">
+              <div class="fill" id="fill-${idx}"></div>
+              <div class="handle" id="handle-${idx}"></div>
+            </div>
+          </div>
+          <div class="scale-info">
+            <span>1</span><span>100</span>
+          </div>
+          <div class="value" id="value-${idx}">50<span>%</span></div>
+        `;
+        scalesWrap.appendChild(card);
+      });
+
+      // повесить события
+      document.querySelectorAll('.track').forEach(track => {
+        let dragging = false;
+
+        const setFromEvent = (e) => {
+          const rect = track.getBoundingClientRect();
+          const clientY = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
+          const y = clientY - rect.top;        // 0..height
+          const ratio = 1 - (y / rect.height); // 0..1 (низ=0, верх=1)
+          const value = Math.round(1 + ratio * 99); // 1..100
+          const idx = Number(track.dataset.idx);
+          setScaleValue(idx, value);
+        };
+
+        track.addEventListener('pointerdown', (e) => {
+          dragging = true;
+          track.setPointerCapture(e.pointerId);
+          setFromEvent(e);
+        });
+        track.addEventListener('pointermove', (e) => {
+          if(!dragging) return;
+          setFromEvent(e);
+        });
+        track.addEventListener('pointerup', () => dragging = false);
+        track.addEventListener('pointercancel', () => dragging = false);
+
+        // fallback на touch (некоторые панели)
+        track.addEventListener('touchstart', (e) => { dragging = true; setFromEvent(e); }, {passive:false});
+        track.addEventListener('touchmove', (e) => { if(!dragging) return; setFromEvent(e); }, {passive:false});
+        track.addEventListener('touchend', () => dragging = false);
+      });
+    }
+
+    // текущее состояние шкал (для ученика)
+    let currentValues = [50,50,50,50];
+
+    function setScaleValue(idx, value){
+      value = Math.max(1, Math.min(100, value));
+      currentValues[idx] = value;
+
+      const fill = document.getElementById(`fill-${idx}`);
+      const handle = document.getElementById(`handle-${idx}`);
+      const valueEl = document.getElementById(`value-${idx}`);
+
+      const heightPct = value; // 1..100
+      fill.style.height = `${heightPct}%`;
+      const col = colorForValue(value);
+      fill.style.background = `linear-gradient(180deg, rgba(234,255,240,.12), ${col})`;
+      fill.style.boxShadow = value >= 70 ? "0 0 22px rgba(46,234,119,.45)" : "0 0 16px rgba(46,234,119,.22)";
+
+      // ручка по уровню
+      // top = (100 - value)% но учитываем высоту ручки
+      handle.style.bottom = `calc(${heightPct}% - 5px)`;
+
+      valueEl.innerHTML = `${value}<span>%</span>`;
+    }
+
+    function applyAll(){
+      for(let i=0;i<4;i++) setScaleValue(i, currentValues[i]);
+    }
+
+    function resetCurrent(){
+      currentValues = [50,50,50,50];
+      applyAll();
+      showToast("Шкалы сброшены до 50%");
+    }
+
+    function updateStudentLabel(){
+      studentLabel.textContent = `Ученик ${currentStudent} из ${totalStudents}`;
+    }
+
+    function saveCurrent(){
+      results[currentStudent-1] = [...currentValues];
+    }
+
+    function nextStudent(){
+      saveCurrent();
+
+      if(currentStudent >= totalStudents){
+        // финал — показать короткую сводку
+        const avg = [0,0,0,0];
+        results.forEach(r => {
+          for(let i=0;i<4;i++) avg[i] += r[i];
+        });
+        for(let i=0;i<4;i++) avg[i] = Math.round(avg[i] / totalStudents);
+
+        alert(
+          "Все ученики отметились ✅\n\n" +
+          "Средние значения класса:\n" +
+          `1) Урок понравился: ${avg[0]}%\n` +
+          `2) Понял тему: ${avg[1]}%\n` +
+          `3) Настроение: ${avg[2]}%\n` +
+          `4) Передал настроение: ${avg[3]}%\n\n` +
+          "Можно закрыть окно или перезагрузить страницу для нового класса."
+        );
+        showToast("Рефлексия завершена ✅");
+        return;
+      }
+
+      currentStudent += 1;
+      updateStudentLabel();
+
+      // сбрасываем под нового ученика (или можно оставлять — но обычно лучше чисто)
+      currentValues = [50,50,50,50];
+      applyAll();
+      showToast("Следующий ученик");
+    }
+
+    startBtn.addEventListener('click', () => {
+      const n = Number(countInput.value);
+      if(!Number.isFinite(n) || n < 1){
+        showToast("Введите корректное число учеников");
+        countInput.focus();
+        return;
+      }
+      totalStudents = Math.min(60, Math.floor(n));
+      currentStudent = 1;
+      results = new Array(totalStudents).fill(null);
+
+      startEl.style.display = "none";
+      panelEl.style.display = "flex";
+
+      buildScales();
+      updateStudentLabel();
+      resetCurrent(); // установит 50% и применит
+      showToast("Рефлексия открыта");
+    });
+
+    nextBtn.addEventListener('click', nextStudent);
+    resetCurrentBtn.addEventListener('click', resetCurrent);
+
+    // Enter на старте
+    countInput.addEventListener('keydown', (e) => {
+      if(e.key === "Enter") startBtn.click();
+    });
+  </script>
+</body>
+</html>
